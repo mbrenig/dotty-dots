@@ -1,0 +1,33 @@
+application: dotty-dots
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+
+# Contains CSS/JS and alphabet.js    
+- url: /static
+  static_dir: static
+
+# Dynamically generated alphabet.js file from
+# latest db data.
+- url: /secret-character-editor/alphabet.js
+  script: edit.py
+
+- url: /secret-character-editor/static
+  static_dir: secret-character-editor/static
+
+- url: /secret-character-editor/.*
+  script: edit.py
+  login: admin
+
+# For testing e.g. 
+# /testarea/shapes.html
+# /testarea/fades.html  
+- url: /testarea
+  static_dir: testarea
+  login: admin
+    
+- url: /.*
+  static_files: index.html
+  upload: index.html

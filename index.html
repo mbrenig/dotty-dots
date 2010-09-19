@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+    <title>dotty-dots!</title>
+    <meta charset="utf-8">
+	<link rel="stylesheet" href="static/main.css" />
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+	<script type="text/javascript" src="static/alphabet.js"></script>
+	<script type="text/javascript" src="static/main.js"></script>
+	
+	<body>
+		<canvas id="c" style="position:absolute;top:0px;left:0px" width="100%" height="100%">
+			Hello old timer!<br/>
+			Sorry, but this website requires HTML5. <br/>
+			You should check out <a href="http://www.google.com/chrome">chrome</a> or <a href="http://www.getfirefox.com">firefox</a><br/>
+			then come back to play!
+		</canvas>
+		
+		<form type="get" action="/" id="inputform">		
+			Enter a message:
+			<input type="text" id="text_field" name="t" value="" row="1" maxlength="30">
+			<input type="hidden" id="hex_field" name="h" value="">
+			<input type="submit" id="submit_btn" value="Go">
+		</form>
+					
+		<script type="text/javascript">
+
+		  var _gaq = _gaq || [];
+		  _gaq.push(['_setAccount', 'UA-18424853-1']);
+		  _gaq.push(['_trackPageview']);
+		
+		  (function() {
+		    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+		  })();
+		
+		</script>
+
+		<p id="attribution">
+			<iframe src="http://www.facebook.com/plugins/like.php?href=http%3A%2F%2Fdotty-dots.appspot.com&amp;layout=button_count&amp;show_faces=true&amp;width=450&amp;action=like&amp;colorscheme=light&amp;height=21" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:200px; height:21px;" allowTransparency="true"></iframe>
+			<br/>Effects by <a href="http://rawkes.com/experiments/google-bouncing-balls-canvas/"
+						onClick="javascript: pageTracker._trackPageview('Attribution/RobHawkes');">Rob Hawkes</a><br/>
+				Built by <a href="http://twitter.com/mbrenig"
+						 onClick="javascript: pageTracker._trackPageview('Attribution/mbrenig');">Mark Brenig-Jones</a><br/>									
+				Lettering by <a href="http://www.proudn00b.com"
+							onClick="javascript: pageTracker._trackPageview('Attribution/Emile');">Emile Petrone</a><br/>
+				Inspired by <a href="http://www.google.com/search?q=google+bouncing+ball+logo" 
+							onClick="javascript: pageTracker._trackPageview('Attribution/Google'');" >Google</a>
+		</p>		
+	</body>
+</html>

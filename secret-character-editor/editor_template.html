@@ -1,0 +1,237 @@
+<html>
+<head>
+	<title>Dotty-dots, character editor</title>
+	<script>
+	window.dhx_globalImgPath = "static/imgs/";
+	</script>
+	<script  src="static/dhtmlxcommon.js"></script>
+	<script  src="static/dhtmlxslider.js"></script>
+	<script  src="static/ext/dhtmlxslider_start.js"></script>
+	<link rel="STYLESHEET" type="text/css" href="static/dhtmlxslider.css">
+	
+	<script type="text/javascript" src="static/json2.js"></script>
+	
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.4/jquery-ui.min.js"></script>
+	
+	<style>
+	.circle {
+		border-bottom-left-radius: 160px 160px;
+		border-bottom-right-radius: 160px 160px;
+		border-top-left-radius: 160px 160px;
+		border-top-right-radius: 160px 160px;
+	}
+	</style>
+</head>
+<body style="">
+	<div id="board" style="position:absolute;display:block;top:25px;z-index:0;left:40px;" >	
+		<span id="character" style="z-index:-1;cursor:pointer;border:1px solid black;font-family: 'Comic Sans', 'Comic Sans MS', cursive;font-size:140px;">{{chr_to_edit}}</span>
+	</div>
+
+	
+	<div id="ctrls" style="position:absolute;left:200px;top:25px;">Control panel:
+		<div id="clearbutton" style="border:1px solid black;margin:5px;padding:3px;">Clear point</div>
+		<div id="char-hider" style="border:1px solid black;margin:5px;padding:3px;">show/hide character</div>
+		<div id="size-slider" style="margin:5px;">size-slider</div>
+		<script>
+		var sizeslider = new dhtmlxSlider("size-slider", {
+		    skin: "dhx_skyblue",
+		    min: 5,
+		    max: 10,
+		    step: 1,
+		    size: 400,
+		    vertical: false
+		});
+		sizeslider.init();
+		</script>
+
+		<div id="fade-slider" style="margin:5px;">fade-slider</div>
+		<script>
+		var fadeslider = new dhtmlxSlider("fade-slider", {
+		    skin: "dhx_skyblue",
+		    min: 0,
+		    max: 255,
+		    step: 5,
+		    size: 400,
+		    vertical: false
+		});
+		fadeslider.init();
+		</script>
+		
+		<div id="width" style="margin:5px; padding:1px;">Width: <input type="text" id="width_field" /></div>
+		
+		<div id="savebutton" style="border:1px solid black;margin:5px;margin-top:10px;padding:3px;">Save Character.</div>
+	</div>
+	
+	<div id="logs" style="position:absolute;top:250px;width:100%;border-top:1px solid black">
+		Data: (height=<span id="height"></span> and width=<span id="width"></span>)<br/>
+	</div>
+	<script>
+	
+	var selectedPoint;
+	
+	$("span#width").append( $("#board").width() );
+	
+	$("input#width_field").val( {{chr_width}} );
+	if ( $("input#width_field").val().length == 0) {
+		$("input#width_field").val( $("#board").width() );
+	}
+	
+	$("span#height").append( $("#board").height() );	
+	
+	function Point(id, x, y, size, fade) {
+		this.id = id;
+		this.x = x;
+		this.y = y;
+		this.size = size;
+		this.fade = fade;
+		
+		this.draw = function() {
+			if ($("#board div#" + this.id).length == 0) {
+				
+				// create the new element
+				$("#board").append("<div id='" + this.id + "' class='circle' style='position:absolute;display:block;'></div>");
+
+				// record the point in this closure.
+				var point_val = this;
+				selectedPoint = point_val;
+				
+				// make it draggable...
+				$("#board div#" + this.id).draggable({
+					drag: function(event, ui) {
+						point_val.x = ui.position.left + point_val.size;
+						point_val.y = ui.position.top + point_val.size;
+						point_val.log();
+					}
+				});
+				
+				$("#board div#" + this.id).click( function() {
+					sizeslider.setValue( point_val.size );
+					fadeslider.setValue( point_val.fade );
+					selectedPoint = point_val;
+					return false;
+				});
+				
+			} 
+			
+			$("#board div#" + this.id).css( 'top', (this.y - this.size))
+									  .css( 'left', (this.x - this.size))
+									  .css( 'background-color', this.bgcol())
+									  .css( 'height', (this.size *2.0))
+									  .css( 'width', (this.size*2.0))
+									  .css( 'z-index', this.id);
+									
+			this.log()
+		};
+		
+
+		
+		this.bgcol = function() {
+			return "rgb(255," + this.fade + "," + this.fade + ")";
+		};
+		
+		this.log = function() {
+			$("#logs div#logFor" + this.id).remove();
+			$("#logs").append( "<div id='logFor" + this.id + 
+						"' class='logFor' style='width:100%;'>x= <span id='x'>" + this.x + 
+						"</span>, y= <span id='y'>" + this.y + 
+						"</span>,size= <span id='size'>" + this.size + 
+						"</span>,fade= <span id='fade'>" + this.fade + "</span></div>");
+		};
+		
+		this.remove = function() {
+			$("#logs div#logFor" + this.id).remove();
+			$("#board div#" + this.id).remove();
+		};
+		
+		this.draw();
+		this.log();
+		
+	};
+	
+
+	var idCode = 0;
+	/* Points list */
+	{% for point in points_list %}
+		new Point(idCode, {{point.x}}, {{point.y}}, {{point.s}}, {{point.f}});
+		idCode += 1;
+	{% endfor %}
+	
+	/* End points list */
+
+
+	var offset = $("#board").offset();
+	//var ctx = canvas.getContext('2d');
+
+	//ctx.fillRect(0, 0, 10, 10);
+	//fadeslider.setValue(255);
+	$("#board").click( function(e) {
+
+		// Adding a new element... 
+		var xcoord = (e.pageX - offset.left);
+		var ycoord = (e.pageY - offset.top);
+		
+		var newpoint = new Point(idCode, xcoord, ycoord, sizeslider.value, fadeslider.value);
+
+		idCode += 1;
+
+	});
+
+	sizeslider.setOnChangeHandler( function() {
+		selectedPoint.size = sizeslider.getValue();
+		selectedPoint.draw();
+	});
+		
+	fadeslider.setOnChangeHandler( function() {
+		selectedPoint.fade = fadeslider.getValue();
+		selectedPoint.draw();
+	});
+	
+	$("#clearbutton").click( function() {
+		selectedPoint.remove();
+	});
+	
+	$("#char-hider").toggle(function() {
+		$("span#character").hide();		
+	}, function () {
+		$("span#character").show();
+	});
+	
+	$("#savebutton").click(function() {
+		
+		var chr_width = $("input#width_field").val();
+		if (chr_width.length == 0) {
+			chr_width = $("#board").width();
+		}
+		var char_data = { width: chr_width ,
+						  height: $("#board").height(),
+						  points: new Array()};
+						
+		$("div.logFor").each( function() {
+			var point_data = { x: $(this).find("span#x").html(),
+							   y: $(this).find("span#y").html(),
+							   s: $(this).find("span#size").html(),
+							   f: $(this).find("span#fade").html() };
+							
+			char_data.points.push(point_data);
+		});
+		
+		var jsonstr = JSON.stringify(char_data);
+		var savebutton = $(this);
+		savebutton.html($("span#character").html() + ": " + jsonstr.substring(0,100) + "...");
+		
+		var post_data = { chr_to_edit: $("span#character").html(),
+		                  data: jsonstr };
+		
+		$.post('save', post_data, 
+			function(d) {
+				alert("Saved data.");
+				savebutton.html("Save again..");
+			});
+	});
+	
+	
+	</script>
+</body>
+</html>
+	
