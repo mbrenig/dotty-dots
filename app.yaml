@@ -3,6 +3,9 @@ version: 1
 runtime: python
 api_version: 1
 
+builtins:
+- datastore_admin: on
+
 handlers:
 
 # Contains CSS/JS and alphabet.js    
@@ -28,6 +31,11 @@ handlers:
   static_dir: testarea
   login: admin
     
+# For import/export.
+- url: /remote_api
+  script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
+  login: admin
+  
 - url: /.*
   static_files: index.html
   upload: index.html
