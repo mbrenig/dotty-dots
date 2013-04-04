@@ -78,6 +78,28 @@ $(function() {
 			hexphrase = "417765736f6d6521";
 		}
 		
+        try {
+		    document.rotationForce = parseFloat(getParameterByName('rf'));
+		    if(isNaN(document.rotationForce)){
+		        document.rotationForce = 0.0;
+		    } else {
+		        $('#inputform').append("<input type='hidden' name='rf' value='" + document.rotationForce + "'>");    
+		    }
+		} catch(err) {
+		    document.rotationForce = 0.0;
+		}
+		
+		try {
+		    document.Friction = parseFloat(getParameterByName('fr'));
+		    if(isNaN(document.Friction)){
+		        document.Friction = 0.85;
+		    } else {
+		        $('#inputform').append("<input type='hidden' name='fr' value='" + document.Friction + "'>");
+	        }
+		} catch(err) {
+		    document.Friction = 0.85;
+		}
+		
 		var col_ix = -1;
 		for(jj=0; jj<hexphrase.length; jj+=2) {
 			var cc_hex = "A" + hexphrase.charAt(jj) + hexphrase.charAt(jj+1);
@@ -236,23 +258,28 @@ $(function() {
 	function Point(x, y, z, size, colour) {
 		this.colour = colour;
 		this.curPos = new Vector(x, y, z);
-		this.friction = 0.8;
+		
+		this.friction = document.Friction;
+    	this.rotationForce = document.rotationForce;
+    	this.springStrength = 0.1;
+    	
 		this.originalPos = new Vector(x, y, z);
 		this.radius = size;
 		this.size = size;
-		this.springStrength = 0.1;
 		this.targetPos = new Vector(x, y, z);
 		this.velocity = new Vector(0.0, 0.0, 0.0);
 		
 		this.update = function() {
 			var dx = this.targetPos.x - this.curPos.x;
-			var ax = dx * this.springStrength;
+			var dy = this.targetPos.y - this.curPos.y;
+		    // Orthogonal vector is [-dy,dx]
+			var ax = dx * this.springStrength - this.rotationForce * dy;
+            var ay = dy * this.springStrength + this.rotationForce * dx;
+            
 			this.velocity.x += ax;
 			this.velocity.x *= this.friction;
 			this.curPos.x += this.velocity.x;
 			
-			var dy = this.targetPos.y - this.curPos.y;
-			var ay = dy * this.springStrength;
 			this.velocity.y += ay;
 			this.velocity.y *= this.friction;
 			this.curPos.y += this.velocity.y;

@@ -1,5 +1,5 @@
 application: dotty-dots
-version: 1
+version: 4
 runtime: python
 api_version: 1
 
@@ -16,10 +16,12 @@ handlers:
 # latest db data.
 - url: /secret-character-editor/alphabet.js
   script: edit.py
-
+  login: admin
+  
 - url: /secret-character-editor/static
   static_dir: secret-character-editor/static
-
+  login: admin
+  
 - url: /secret-character-editor/.*
   script: edit.py
   login: admin

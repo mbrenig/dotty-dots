@@ -42,6 +42,13 @@ canvas, section {
 	right: 30px;
 }
 
+#effects {
+    text-align: left;
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+}
+
 #inputform {
 	position:absolute;
 	top:-2px;
